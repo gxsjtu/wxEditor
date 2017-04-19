@@ -8,43 +8,69 @@
     <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js"> </script>
     <script type="text/javascript" charset="utf-8" src="/ueditor/lang/zh-cn/zh-cn.js"> </script>
     <style type="text/css">
+      html{
+        height: 100%;
+      }
       body{
+        margin: 0;
+        margin-top: 20px;
+        padding: 0;
         line-height: 1.6;
         font-family: "Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","\9ED1\4F53",Arial,sans-serif;
         color: #222;
         font-size: 14px;
         min-width: 1200px;
         background: #e7e8eb;
+        height: calc(100% - 20px);
       }
-      /*div{
-          width:100%;
-      }*/
 
       .container{
         display: flex;
         margin: 0 auto;
         width: 1200px;
+        height: calc(100% - 70px);
+        overflow: hidden;
       }
 
     .left{
       width: 250px;
+      height: 100%;
       border-right: 1px solid #e7e7eb;
       background-color: #f8f8f8;
     }
+    .editor{
+      width: 1024px;
+      height: calc(100% - 30px);
+    }
+    .footer{
+      display: flex;
+      height: 70px;
+      justify-content: center;
+      align-items: center;
+    }
 
-
-
+    .footer button{
+      width: 100px;
+      height: 30px;
+      background-color: #44b549;
+      border-color: #44b549;
+      color: #fff;
+    }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="left">
       图文列表
     </div>
-    <div>
+    <div class="editor">
         <!-- <h1>完整demo</h1> -->
-        <script id="editor" type="text/plain" style="width:1024px;height:500px;"></script>
+        <script id="editor" type="text/plain" style="width:1024px;height:100%;"></script>
     </div>
+  </div>
+  <div class="footer">
+    <button id="btnSubmit" type="button">保存</button>
   </div>
 
 <!-- <div id="btns">
@@ -181,6 +207,11 @@
             UE.dom.domUtils.removeAttributes(btn, ["disabled"]);
         }
     }
+    $(function(){
+      $("#btnSubmit").click(function(){
+        var content = UE.getEditor('editor').getContent();
+      });
+    });
 </script>
 </body>
 </html>

@@ -2,7 +2,7 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>完整demo</title>
+    <title>图文管理</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
     <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.config.js"></script>
     <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js"> </script>
@@ -27,16 +27,19 @@
       .container{
         display: flex;
         margin: 0 auto;
-        width: 1200px;
+        width: 1300px;
         height: calc(100% - 70px);
         overflow: hidden;
       }
 
     .left{
-      width: 250px;
+      width: 238px;
       height: 100%;
       border-right: 1px solid #e7e7eb;
       background-color: #f8f8f8;
+      padding: 10px 30px;
+      overflow-y: scroll;
+
     }
     .editor{
       width: 1024px;
@@ -55,31 +58,221 @@
       background-color: #44b549;
       border-color: #44b549;
       color: #fff;
+      outline:none;
     }
+
+    .footer button:hover{
+      background-color: #2f9833;
+    }
+
+    .input{
+      width: 800px;
+      margin: 10px auto;
+    }
+
+    .input input{
+      width: 600px;
+      margin-left: 20px;
+    }
+
+    .default{
+      width: 188px;
+      height: 119px;
+
+    }
+
+    .image-container{
+      background-color: #ececec;
+      width: 188px;
+      height: 119px;
+      position: relative;
+    }
+
+    .image-title{
+      position: absolute;
+      bottom: 0;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    .doc{
+      padding : 5px;
+      border: 2px solid #e7e7eb;
+    }
+
+    .active{
+      border: 2px solid #43b548;
+    }
+
+    .other-img{
+      width: 77px;
+      height: 77px;
+    }
+
+    .other-container{
+      display: flex;
+      flex-direction: row;
+      width: 188px;
+      height: 78px;
+      justify-content:space-between;
+      align-items: center;
+    }
+
+    .other-container .title{
+      width: 100px;
+      height: 40px;
+      overflow-y: hidden;
+      word-wrap:break-word;
+    }
+
+    .add{
+      font-size: 60px;
+      text-align: center;
+      height: 90px;
+      line-height: 90px;
+      color: #979797;
+      border: 1px dotted #d9dadc;
+      margin-bottom: 20px;
+    }
+
+    .add:hover{
+      color: #777;
+    }
+
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 <body>
   <div class="container">
     <div class="left">
-      图文列表
+      <div class="doc active" data-index="1">
+        <div class="image-container">
+          <img class="default" src="/img/back.png" alt="">
+          <div class="image-title title">标题</div>
+        </div>
+      </div>
+      <div class="add">
+        +
+      </div>
     </div>
     <div class="editor">
-        <!-- <h1>完整demo</h1> -->
+      <div class="input">
+        <span>标题</span><input type="text" placeholder="标题" id="title"/>
+      </div>
+      <div class="input">
+        <span>作者</span><input type="text" placeholder="作者" id="author"/>
+      </div>
+
+      <div class="input">
+        <form id="uploadForm" enctype="multipart/form-data" action="/cover" method="post">
+          <span>封面</span><input id="cover" name="cover" type="file" />
+          <button type="submit" name="btnUpload" id="btnUpload">上传</button>
+        </form>
+      </div>
+
         <script id="editor" type="text/plain" style="width:1024px;height:100%;"></script>
     </div>
   </div>
   <div class="footer">
     <button id="btnSubmit" type="button">保存</button>
   </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
+<!--  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery.form/3.51/jquery.form.min.js"> -->
 <script type="text/javascript">
     var ue = UE.getEditor('editor');
+    var doc={};
+
+    function guid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+      });
+    }
+
+
+    function getQueryString(name){
+         var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+         var r = window.location.search.substr(1).match(reg);
+         if(r!=null)
+           return  unescape(r[2]);
+         return null;
+    }
+
+    var action = 'create';
+    var coverName;
+    var count = 1;
+    var currentIndex = 1;
+
     $(function(){
+      var queryId = getQueryString("id");
+      if(queryId){
+        doc.id = queryId;
+        doc.action = 'update';
+        //todo://查询doc有几个文档,赋值
+      }
+      else{
+        doc.id = guid();
+        doc.action = 'create';
+        doc.count = count;
+      }
+
+      $(".add").click(function(){
+        var content = $('<div class="doc" data-index="'+(doc.count + 1)+'"><div class="other-container"><div class="title">标题</div><img src="/img/small.png"alt="" class="other-img"></div></div>');
+        $(this).before(content);
+        doc.count++;
+        content.trigger("click");//触发点击事件
+      });
+      //点击事件
+      $(".left").on('click','.doc',function(){
+        $(".doc").removeClass("active");
+        $(this).addClass("active");
+        //todo:保存上一个文档，放入doc里
+        currentIndex = $(this).data("index");
+      });
+
+      $("#title").on("input",function(){
+        var text = $(this).val();
+        if(text){
+          $(".active .title").text(text);
+        }
+        else{
+          $(".active .title").text("标题");
+        }
+      });
+
+      $('#uploadForm').submit(function() {
+           $(this).ajaxSubmit({
+               error: function(xhr) {
+                 alert('上传失败');
+               },
+               success: function(res) {
+                  if(res.result == 'ok'){
+                    //上传成功
+                    coverName = res.fileName;
+                    $(".active img").attr("src","/cover/"+coverName);
+                  }
+               }
+       });
+       return false;
+     });
+
       $("#btnSubmit").click(function(){
         var content = UE.getEditor('editor').getContent();
+        var title = $("#title").val();
+        var author = $("#author").val();
+        if(content){
+          $.post("submit",{action:action,content:content,id:id},function(data){
+            //data返回保存结果和保存的文件名
+            console.log(data);
+          })
+        }
       });
     });
+
+
 </script>
+
 </body>
 </html>

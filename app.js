@@ -84,23 +84,62 @@ function makeContent(content){
   return result;
 }
 
+function deleteall(path) {
+    var files = [];
+    if(fs.existsSync(path)) {
+        files = fs.readdirSync(path);
+        files.forEach(function(file, index) {
+            var curPath = path + "/" + file;
+            if(fs.statSync(curPath).isDirectory()) { // recurse
+                deleteall(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(path);
+    }
+};
+
 //以下为路由
 
 app.post('/submit',function(req,res){
-  //let dir = path.join(__dirname, 'public');
-  let folder = uuid.v4();
-  let dir = path.join(__dirname, 'public','document',folder);
-  if (fs.existsSync(dir)) {
-     console.log('已经创建过此目录了');
-   } else {
-     fs.mkdirSync(dir);
-   };
+  console.log(req.body);
 
-   let content = makeContent(req.body.content);
-   let fileName = uuid.v4();
-   fs.writeFile(path.join(dir, fileName + '.html'), content, 'utf8', (err) => {
-   if (err) throw err;
- });
+  let doc = req.body;
+  let uid = doc.id;
+  if(!uid){
+      uid = uuid.v4();
+  }
+
+  let dir = path.join(__dirname,'public','document',uid);
+  if(fs.existsSync(dir)){
+      deleteall(dir);//删除
+  }
+  fs.mkdirSync(dir);
+
+  for (var i = 0; i < doc.arr.length; i++) {
+    let fileName = uuid.v4() + '.html';
+    doc.arr[i].fileName = fileName;
+    let content = makeContent(doc.arr[i].content);
+    fs.writeFileSync(path.join(dir,fileName),content);
+  }
+
+  res.json({result:'ok'});
+
+  //let dir = path.join(__dirname, 'public');
+ //  let folder = uuid.v4();
+ //  let dir = path.join(__dirname, 'public','document',folder);
+ //  if (fs.existsSync(dir)) {
+ //     console.log('已经创建过此目录了');
+ //   } else {
+ //     fs.mkdirSync(dir);
+ //   };
+ //
+ //   let content = makeContent(req.body.content);
+ //   let fileName = uuid.v4();
+ //   fs.writeFile(path.join(dir, fileName + '.html'), content, 'utf8', (err) => {
+ //   if (err) throw err;
+ // });
 });
 
 app.post('/cover',function(req,res){

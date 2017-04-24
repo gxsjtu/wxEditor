@@ -200,13 +200,13 @@
 
 
 
-        function guid() {
-            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0,
-                    v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
-            });
-        }
+        // function guid() {
+        //     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        //         var r = Math.random() * 16 | 0,
+        //             v = c == 'x' ? r : (r & 0x3 | 0x8);
+        //         return v.toString(16);
+        //     });
+        // }
 
 
         function getQueryString(name) {
@@ -283,7 +283,6 @@
           return add;
         }
 
-        var action = 'create';
         var coverName;
         var count = 1;
         var currentIndex = 1;
@@ -307,12 +306,10 @@
             var queryId = getQueryString("id");
             if (queryId) {
                 doc.id = queryId;
-                doc.action = 'update';
                 //todo://查询doc有几个文档,赋值
             } else {
-                doc.id = guid();
-                doc.action = 'create';
-                doc.count = count;
+                doc.id = '';
+                //doc.id = guid();
             }
 
             ue.addListener("ready",function(){
@@ -329,7 +326,6 @@
 
 
                 currentIndex = $(this).data("index");
-                console.log(currentIndex);
 
                 if(arr[currentIndex].hasOwnProperty('content')){
                   ue.setContent(arr[currentIndex].content);
@@ -350,8 +346,6 @@
                 else{
                   $("#author").val("");
                 }
-
-
             });
 
             $(".left").on('click', '.add', function() {
@@ -403,8 +397,6 @@
                     },
                     success: function(res) {
                         if (res.result == 'ok') {
-                            //上传成功
-                            //debugger;
                             coverName = res.fileName;
                             arr[currentIndex].cover = coverName;
                             $(".active img").attr("src", "/cover/" + coverName);
@@ -415,19 +407,40 @@
             });
 
             $("#btnSubmit").click(function() {
-                // var content = ue.getContent();
-                // var title = $("#title").val();
-                // var author = $("#author").val();
-                // if (content) {
-                //     $.post("submit", {
-                //         action: action,
-                //         content: content,
-                //         id: id
-                //     }, function(data) {
-                //         console.log(data);
-                //     })
-                // }
 
+                for (var i = 0; i < arr.length; i++) {
+                  if(!arr[i].title){
+                    alert('第'+(i+1)+'个图文没有输入标题');
+                    return false;
+                  }
+                  if(!arr[i].author){
+                    alert('第'+(i+1)+'个图文没有输入作者');
+                    return false;
+                  }
+                  if(!arr[i].cover){
+                    alert('第'+(i+1)+'个图文没有上传封面');
+                    return false;
+                  }
+                  if(!arr[i].content){
+                    alert('第'+(i+1)+'个图文没有输入正文');
+                    return false;
+                  }
+                }
+
+
+                if(arr.length>0){
+                  doc.arr = arr;
+                  $.ajax({
+                    type:"post",
+                    url:'submit',
+                    data:JSON.stringify(doc),
+                    dataType:'json',
+                    contentType:'application/json; charset=utf-8',
+                    success:function(data){
+
+                    }
+                  })
+                }
             });
         });
     </script>

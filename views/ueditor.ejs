@@ -194,20 +194,12 @@
         var doc = {};
         var arr = [];
 
-        ue.addListener("contentChange",function(){
+        var coverName;
+        var currentIndex = 0;
+
+        function getContent(){
           arr[currentIndex].content = ue.getContent();
-        });
-
-
-
-        // function guid() {
-        //     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        //         var r = Math.random() * 16 | 0,
-        //             v = c == 'x' ? r : (r & 0x3 | 0x8);
-        //         return v.toString(16);
-        //     });
-        // }
-
+        }
 
         function getQueryString(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -221,7 +213,8 @@
           $(".left").empty();
 
           if(arr.length == 0){
-            arr.push({index:0});
+            var obj = {index : 0, title: '', author: '', content: '', cover: ''}
+            arr.push(obj);
             $(".left").append(makePrimary());
           }
           else{
@@ -283,9 +276,7 @@
           return add;
         }
 
-        var coverName;
-        var count = 1;
-        var currentIndex = 1;
+
 
 
         function getDocByIndex(index){
@@ -318,20 +309,18 @@
 
             //点击事件
             $(".left").on('click', '.doc', function() {
+                getContent();
                 $(".doc").removeClass("active");
                 $(this).addClass("active");
                 var file = $("#cover");
                 file.after(file.clone().val(""));
                 file.remove();
 
-
                 currentIndex = $(this).data("index");
-
                 if(arr[currentIndex].hasOwnProperty('content')){
                   ue.setContent(arr[currentIndex].content);
                 }
                 else{
-
                   ue.setContent("");
                 }
                 if(arr[currentIndex].hasOwnProperty('title')){
@@ -349,17 +338,22 @@
             });
 
             $(".left").on('click', '.add', function() {
+                getContent();
                 var dom = makeOther(arr.length);
                 $(this).before(dom);
+                $(".doc").removeClass("active");
+
                 $("#title").val("");
                 $("#author").val("");
+                ue.setContent("");
                 var file = $("#cover");
                 file.after(file.clone().val(""));
                 file.remove();
-                var newDoc = {index:arr.length};
+                var newDoc = {index : arr.length - 1};
                 arr.push(newDoc);
-                currentIndex = arr.length;
-                dom.trigger("click");
+                currentIndex = arr.length - 1;
+                $(".doc").eq(currentIndex).addClass("active");
+                //dom.trigger("click");
             });
 
             $(".left").on('mouseover mouseout','.doc',function(e){
@@ -407,7 +401,8 @@
             });
 
             $("#btnSubmit").click(function() {
-
+              debugger;
+                getContent();
                 for (var i = 0; i < arr.length; i++) {
                   if(!arr[i].title){
                     alert('第'+(i+1)+'个图文没有输入标题');

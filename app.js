@@ -3,24 +3,10 @@ var ejs = require('ejs');
 var path = require('path');
 var fs= require('fs');
 var uuid = require('node-uuid');
-var multer = require ('multer');
-
-
-var storage =   multer.diskStorage({
-  destination: function (req, file, callback) {
-    callback(null, './public/cover');
-  },
-  filename: function (req, file, callback) {
-    //file.originalname   coffee.jpg
-    var fileFormat = (file.originalname).split(".");
-
-    callback(null, uuid.v4() + '.' + fileFormat[fileFormat.length - 1]);
-  }
-});
-var upload = multer({ storage : storage}).single('cover');
-
-var mongoose = require('mongoose');
 var app = express();
+
+var router = require("./router/router.js");
+var db = require("./models/db.js");
 
 var ueditor = require("ueditor");
 var bodyParser = require('body-parser');
@@ -32,9 +18,8 @@ app.use(bodyParser.json());
 // view engine setup
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.set('views', path.join(__dirname, 'views'));
-app.engine('.html', ejs.__express);
-app.set('view engine', 'html');
+
+app.set('view engine', 'ejs');
 
 app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function (req, res, next) {
     //客户端上传文件设置
@@ -65,96 +50,12 @@ app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function (req, re
     }
 }));
 
+app.post('/submit',router.save);
 
-//增加换行
-function appendLine(content,append){
-  return content+append+'\r\n';
-}
+app.post('/cover',router.cover);
 
-function makeContent(content){
-  let result = appendLine('<html>','');
-  result= appendLine(result,'<head>');
-  result=appendLine(result,'<meta name = "viewport" content = "width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = 0" />');
-  result=appendLine(result,'<meta http-equiv="Content-Type" content="text/html; charset=utf-8">');
-  result=appendLine(result,'</head>');
-  result=appendLine(result,'<body>');
-  result=appendLine(result,content);
-  result=appendLine(result,'</body>');
-  result+='</html>';
-  return result;
-}
-
-function deleteall(path) {
-    var files = [];
-    if(fs.existsSync(path)) {
-        files = fs.readdirSync(path);
-        files.forEach(function(file, index) {
-            var curPath = path + "/" + file;
-            if(fs.statSync(curPath).isDirectory()) { // recurse
-                deleteall(curPath);
-            } else { // delete file
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
-    }
-};
-
-//以下为路由
-
-app.post('/submit',function(req,res){
-  console.log(req.body);
-
-  let doc = req.body;
-  let uid = doc.id;
-  if(!uid){
-      uid = uuid.v4();
-  }
-
-  let dir = path.join(__dirname,'public','document',uid);
-  if(fs.existsSync(dir)){
-      deleteall(dir);//删除
-  }
-  fs.mkdirSync(dir);
-
-  for (var i = 0; i < doc.arr.length; i++) {
-    let fileName = uuid.v4() + '.html';
-    doc.arr[i].fileName = fileName;
-    let content = makeContent(doc.arr[i].content);
-    fs.writeFileSync(path.join(dir,fileName),content);
-  }
-
-  res.json({result:'ok'});
-
-  //let dir = path.join(__dirname, 'public');
- //  let folder = uuid.v4();
- //  let dir = path.join(__dirname, 'public','document',folder);
- //  if (fs.existsSync(dir)) {
- //     console.log('已经创建过此目录了');
- //   } else {
- //     fs.mkdirSync(dir);
- //   };
- //
- //   let content = makeContent(req.body.content);
- //   let fileName = uuid.v4();
- //   fs.writeFile(path.join(dir, fileName + '.html'), content, 'utf8', (err) => {
- //   if (err) throw err;
- // });
-});
-
-app.post('/cover',function(req,res){
-  upload(req,res,function(err) {
-        if(err) {
-          console.log(err);
-          res.json({result:'err'});
-        }
-        res.json({result:'ok',fileName:req.file.filename});
-    });
-});
-
-app.use('/', function (req, res) {
-    res.render('ueditor');
-});
+app.use('/add', router.addDoc);
+app.use('/', router.showIndex);
 
 app.listen(3000, function () {
     console.log('app listen : 3000');

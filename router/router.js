@@ -121,7 +121,9 @@ exports.ueupload = function (req, res, next) {
 }
 
 exports.addDoc = function(req,res,next){
-  res.render('ueditor');
+  res.render('ueditor',{
+    "doc":{}
+  });
 }
 
 exports.editDoc = function(req,res,next){

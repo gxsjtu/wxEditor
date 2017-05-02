@@ -3,6 +3,7 @@ var path = require('path');
 var fs= require('fs');
 var uuid = require('node-uuid');
 var multer = require ('multer');
+var util = require('util');
 
 var storage =   multer.diskStorage({
   destination: function (req, file, callback) {
@@ -120,17 +121,26 @@ exports.ueupload = function (req, res, next) {
 }
 
 exports.addDoc = function(req,res,next){
-  console.log('add');
-    res.render('ueditor');
+  res.render('ueditor');
+}
+
+exports.editDoc = function(req,res,next){
+  console.log('edit');
+  var docId = req.params["docId"];
+  console.log(docId);
+  wxDoc.findById(docId,function(err,doc){
+    console.log(doc);
+      res.render("ueditor",{
+          "doc" : doc
+      });
+  });
 }
 
 exports.showIndex = function(req,res,next){
     wxDoc.findAll(function(err,result){
-      console.log('all');
-      console.log(result);
-        // res.render("index",{
-        //     "students" : result
-        // });
+        res.render("index",{
+            "docs" : result
+        });
     });
 }
 

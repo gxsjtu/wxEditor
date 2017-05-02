@@ -55,6 +55,7 @@ app.post('/submit',router.save);
 app.post('/cover',router.cover);
 
 app.use('/add', router.addDoc);
+app.use('/edit/:docId', router.editDoc);
 app.use('/', router.showIndex);
 
 app.listen(3000, function () {

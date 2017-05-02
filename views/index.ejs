@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>事妈驾到</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <style>
+      .container{
+        width: 80%;
+        margin: 0 auto;
+        -webkit-column-count:3;
+        column-count:3;
+        -webkit-column-gap: 2em;
+        column-gap: 2em;
+      }
+
+      .box{
+        -webkit-column-break-inside:avoid;
+        column-break-inside:avoid;
+      }
+
+      .first-title{
+        position: absolute;
+        bottom: 0;
+        width: 268px;
+        height: 25px;
+        line-height: 25px;
+        background: rgba(0,0,0,0.6);
+        color: white;
+      }
+
+      .first-cover{
+        width: 268px;
+        height: 160px;
+      }
+
+      .cover{
+        position: absolute;
+        width: 78px;
+        height: 78px;
+        right: 10px;
+      }
+
+      .box-container{
+        position:relative;
+        width: 268px;
+        border: 1px solid #e7e7eb;
+        padding: 10px;
+      }
+
+      .title{
+        width: 175px;
+        position: absolute;
+        top: 30px;
+      }
+      .footer{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #f4f4f4;
+        width: 290px;
+      }
+
+      .footer > div{
+        width: 145px;
+        height: 44px;
+        line-height: 44px;
+        text-align: center;
+        color: #b2b2b2;
+      }
+
+      .footer > div:hover{
+        color: black;
+      }
+    </style>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>
+
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <% if (docs.length) { %>
+          <% docs.forEach(function(doc){ %>
+            <div class="box">
+              <% for(var i = 0; i < doc.docs.length; i++){
+                  var d = doc.docs[i]; %>
+
+                  <% if(i == 0) { %>
+                    <div class="box-container" style="overflow:hidden;">
+                    <div class="first-title"><%= d.title %></div>
+                    <img class="first-cover" src="/cover/<%= d.cover %>" alt="">
+                  <% } %>
+                  <% if(i > 0) { %>
+                    <div class="box-container" style="height:88px;">
+                    <div class="title"><%= d.title %></div>
+                    <img class="cover" src="/cover/<%= d.cover %>" alt="">
+                  <% } %>
+                </div>
+              <% } %>
+              <div class="footer">
+                <div style="border-right:1px solid #e7e7eb;"><a href="/edit/<%= doc.id %>">编辑</a></div>
+                <div>删除</div>
+              </div>
+            </div>
+
+          <% }) %>
+      <% } %>
+    </div>
+  </body>
+</html>

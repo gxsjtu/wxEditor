@@ -61,15 +61,22 @@
         width: 290px;
       }
 
+      a{
+        text-decoration: none;
+      }
+
       .footer > div{
         width: 145px;
         height: 44px;
         line-height: 44px;
         text-align: center;
+      }
+
+      .footer a{
         color: #b2b2b2;
       }
 
-      .footer > div:hover{
+      .footer a:hover{
         color: black;
       }
     </style>
@@ -79,6 +86,7 @@
     </script>
   </head>
   <body>
+    <a href="/add">新增</a>
     <div class="container">
       <% if (docs.length) { %>
           <% docs.forEach(function(doc){ %>
@@ -100,7 +108,7 @@
               <% } %>
               <div class="footer">
                 <div style="border-right:1px solid #e7e7eb;"><a href="/edit/<%= doc.id %>">编辑</a></div>
-                <div>删除</div>
+                <div><a href="/delete/<%= doc.id %>">删除</a></div>
               </div>
             </div>
 

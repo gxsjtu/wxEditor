@@ -20,5 +20,8 @@ wxDocSchema.statics.findAll = function(callback){
 wxDocSchema.statics.findById = function(id,callback){
   return this.model('wxDoc').findOne({id: id}, callback);
 }
+wxDocSchema.statics.deleteById = function(id,callback){
+  return this.model('wxDoc').remove({id: id},callback);
+}
 var wxDoc = mongoose.model("wxDoc",wxDocSchema);
 module.exports = wxDoc;

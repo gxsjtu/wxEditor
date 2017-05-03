@@ -127,13 +127,25 @@ exports.addDoc = function(req,res,next){
 }
 
 exports.editDoc = function(req,res,next){
-  console.log('edit');
   var docId = req.params["docId"];
-  console.log(docId);
   wxDoc.findById(docId,function(err,doc){
-    console.log(doc);
       res.render("ueditor",{
           "doc" : doc
+      });
+  });
+}
+
+exports.deleteDoc = function(req,res,next){
+  var docId = req.params["docId"];
+  wxDoc.deleteById(docId,function(err,doc){
+    let dir = path.join(process.cwd(),'public','document',docId);
+    if(fs.existsSync(dir)){
+        deleteall(dir);//删除
+    }
+      wxDoc.findAll(function(err,result){
+          res.render("index",{
+              "docs" : result
+          });
       });
   });
 }
@@ -156,7 +168,6 @@ exports.save = function(req,res,next){
     uid = uuid.v4();
   }
   let dir = path.join(process.cwd(),'public','document',uid);
-  console.log(dir);
   if(fs.existsSync(dir)){
       deleteall(dir);//删除
   }

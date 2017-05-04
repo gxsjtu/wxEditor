@@ -46,9 +46,12 @@ function saveData(doc, uid, res){
     //修改
     let id = doc.id;
     wxDoc.findById(id,function(err,result){
+      if(err){
+        console.log(err);
+      }
       if(result){
         result.docs = docs;
-        result.save(err,function(){
+        result.save(result,function(err,result){
           if(err)
               res.json({result:'err'});
           res.json({result:'ok'});
@@ -159,6 +162,7 @@ exports.showIndex = function(req,res,next){
 }
 
 exports.save = function(req,res,next){
+
   let doc = req.body;
   let uid = '';
   if(doc.id){
@@ -167,6 +171,7 @@ exports.save = function(req,res,next){
   else{
     uid = uuid.v4();
   }
+
   let dir = path.join(process.cwd(),'public','document',uid);
   if(fs.existsSync(dir)){
       deleteall(dir);//删除

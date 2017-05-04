@@ -1,7 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
 <head>
     <title>图文管理</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -185,16 +184,16 @@
         </div>
     </div>
     <div class="footer">
-        <button id="btnSubmit" type="button">保存</button>
+        <input type="button" value="保存" id="btnSubmit">
+        <!-- <button id="btnSubmit" type="button">保存</button> -->
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
     <script type="text/javascript">
         var ue = UE.getEditor('editor');
-        var doc = {};
+        var doc = {id:''};
         var arr = [];
 
-        doc.id = '';
-         <% if(doc.id) { %>
+         <% if(doc && doc.id) { %>
            doc.id = '<%= doc.id%>';
            arr = [
              <% for(var i = 0; i < doc.docs.length; i++){
@@ -213,7 +212,7 @@
 
         function makeDoc(){
           $(".left").empty();
-
+          currentIndex = 0;
           if(arr.length == 0){
             var obj = {index : 0, title: '', author: '', content: '', cover: ''}
             arr.push(obj);
@@ -244,7 +243,6 @@
             ue.setContent(arr[0].content);
           }
           else{
-
             //ue.setContent("");
           }
           if(arr[0].hasOwnProperty('title')){
@@ -259,14 +257,13 @@
           else{
             $("#author").val("");
           }
-          currentIndex = 0;
+
         }
 
         function makePrimary(){
           var primary = $('<div class="doc" data-index="0"><div class="image-container"><img class="default" src="/img/back.png" alt=""><div class="image-title title">标题</div></div><div class="remove-container"><span class="remove">删除</span></div></div>');
           return primary;
         }
-
 
         function makeOther(index){
           var other = $('<div class="doc" data-index="'+index+'"><div class="other-container"><div class="title">标题</div><img src="/img/small.png"alt="" class="other-img"></div><div class="remove-container"><span class="remove">删除</span></div></div>');
@@ -277,9 +274,6 @@
           var add = $('<div class="add">+</div>');
           return add;
         }
-
-
-
 
         function getDocByIndex(index){
           for (var i = 0; i < arr.length; i++) {
@@ -294,17 +288,7 @@
             console.log(arr);
           }
 
-
         $(function() {
-            // var queryId = getQueryString("id");
-            // if (queryId) {
-            //     doc.id = queryId;
-            //     //todo://查询doc有几个文档,赋值
-            // } else {
-            //     doc.id = '';
-            //     //doc.id = guid();
-            // }
-
             ue.addListener("ready",function(){
               makeDoc();
             })
@@ -367,9 +351,11 @@
             })
 
             //删除
-            $(".left").on('click','.remove',function(){
+            $(".left").on('click','.remove',function(e){
               arr.splice(currentIndex,1);
               makeDoc();
+              //阻止冒泡，否则会触发.doc的click事件。
+              e.stopPropagation();
             });
 
             $("#title").on("input", function() {
@@ -423,17 +409,23 @@
                   }
                 }
 
-
                 if(arr.length>0){
                   doc.arr = arr;
                   $.ajax({
                     type:"post",
-                    url:'submit',
+                    url:'/submit',
                     data:JSON.stringify(doc),
                     dataType:'json',
                     contentType:'application/json; charset=utf-8',
                     success:function(data){
-
+                      console.log(data);
+                      if(data.result == 'ok'){
+                        alert('保存成功');
+                        window.location.href="/";
+                      }
+                      else{
+                        alert('保存失败');
+                      }
                     }
                   })
                 }

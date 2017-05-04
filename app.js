@@ -55,6 +55,7 @@ app.post('/submit',router.save);
 app.post('/cover',router.cover);
 
 app.use('/add', router.addDoc);
+app.use('/showMaterials', router.showMaterials);
 app.use('/edit/:docId', router.editDoc);
 app.use('/delete/:docId', router.deleteDoc);
 app.use('/', router.showIndex);

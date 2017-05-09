@@ -198,7 +198,7 @@
            arr = [
              <% for(var i = 0; i < doc.docs.length; i++){
                  var d = doc.docs[i]; %>
-                  {title:'<%= d.title%>',author:'<%= d.author%>',cover:'<%= d.cover%>',fileName:'<%= d.fileName%>',content:'<%- d.content%>'},
+                  {title:'<%- d.title%>',author:'<%= d.author%>',cover:'<%= d.cover%>',fileName:'<%= d.fileName%>',content:'<%- d.content%>'},
             <%  } %>
            ];
          <% }%>
@@ -261,12 +261,12 @@
         }
 
         function makePrimary(){
-          var primary = $('<div class="doc" data-index="0"><div class="image-container"><img class="default" src="/img/back.png" alt=""><div class="image-title title">标题</div></div><div class="remove-container"><span class="remove">删除</span></div></div>');
+          var primary = $('<div class="doc" data-index="0"><div class="image-container"><img class="default" src="/img/back.png" alt=""><div class="image-title title">标题</div></div><div class="remove-container"><span class="remove" data-index="0">删除</span></div></div>');
           return primary;
         }
 
         function makeOther(index){
-          var other = $('<div class="doc" data-index="'+index+'"><div class="other-container"><div class="title">标题</div><img src="/img/small.png"alt="" class="other-img"></div><div class="remove-container"><span class="remove">删除</span></div></div>');
+          var other = $('<div class="doc" data-index="'+index+'"><div class="other-container"><div class="title">标题</div><img src="/img/small.png"alt="" class="other-img"></div><div class="remove-container"><span class="remove" data-index="'+index+'">删除</span></div></div>');
           return other;
         }
 
@@ -352,7 +352,8 @@
 
             //删除
             $(".left").on('click','.remove',function(e){
-              arr.splice(currentIndex,1);
+              let index = $(this).data('index');
+              arr.splice(index,1);
               makeDoc();
               //阻止冒泡，否则会触发.doc的click事件。
               e.stopPropagation();

@@ -205,7 +205,7 @@ router.get('/delete', function(req, res, next) {
   });
 });
 
-router.get('/showIndex', function(req, res, next) {
+router.get('/', function(req, res, next) {
   wxDoc.findAll(function(err, result) {
     res.render("index", {
       "docs": result

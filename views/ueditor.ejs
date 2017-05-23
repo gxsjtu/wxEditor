@@ -175,7 +175,7 @@
       </div>
 
       <div class="input">
-        <form id="uploadForm" enctype="multipart/form-data" action="/cover?folder=" method="post">
+        <form id="uploadForm" enctype="multipart/form-data">
           <span>封面</span><input id="cover" name="cover" type="file" />
           <button type="submit" name="btnUpload" id="btnUpload">上传</button>
         </form>
@@ -195,6 +195,7 @@
       id: ''
     };
     var arr = [];
+    let folderName = '';
 
     <% if(doc && doc.id) { %>
     doc.id = '<%= doc.id%>';
@@ -386,9 +387,8 @@
 
       $('#uploadForm').submit(function() {
         $(this).ajaxSubmit({
-          data: {
-            folder: '99999'
-          },
+          type: 'post',
+          url:'/cover?folder='+folderName,
           error: function(xhr) {
             console.log(xhr);
             alert('上传失败');
@@ -396,8 +396,9 @@
           success: function(res) {
             if (res.result == 'ok') {
               coverName = res.fileName;
+              folderName = res.folder;
               arr[currentIndex].cover = coverName;
-              $(".active img").attr("src", "/cover/" + coverName);
+              $(".active img").attr("src", "/document/" + folderName+ "/" + coverName);
             }
           }
         });

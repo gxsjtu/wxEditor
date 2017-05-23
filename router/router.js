@@ -10,14 +10,12 @@ var url = require('url');
 var express = require('express');
 var router = express.Router();
 const Jssdk = require('../services/jssdk.js');
-router.use(Jssdk.jssdk);
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
-    console.log(req.query.folder);
     if (req.query.folder) {
       let p = path.join(process.cwd(), 'public', 'document', req.query.folder);
-      if(!fs.existsSync(p)){
+      if (!fs.existsSync(p)) {
         fs.mkdirSync(p);
       }
       callback(null, p);
@@ -108,17 +106,17 @@ function makeContent(content) {
   return result;
 }
 
-  function getContent(content){
-    content = content.replace('<html>\r\n','');
-    content = content.replace('<head>\r\n','');
-    content = content.replace('<meta name = "viewport" content = "width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = 0" />\r\n','');
-    content = content.replace('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\r\n','');
-    content = content.replace('</head>\r\n','');
-    content = content.replace('<body>\r\n','');
-    content = content.replace('\r\n</body>\r\n','');
-    content = content.replace('</html>','');
-    return content;
-  }
+function getContent(content) {
+  content = content.replace('<html>\r\n', '');
+  content = content.replace('<head>\r\n', '');
+  content = content.replace('<meta name = "viewport" content = "width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = 0" />\r\n', '');
+  content = content.replace('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\r\n', '');
+  content = content.replace('</head>\r\n', '');
+  content = content.replace('<body>\r\n', '');
+  content = content.replace('\r\n</body>\r\n', '');
+  content = content.replace('</html>', '');
+  return content;
+}
 
 function deleteall(path) {
   var files = [];
@@ -130,8 +128,8 @@ function deleteall(path) {
         deleteall(curPath);
       } else { // delete file
         let fileFormat = file.split(".")[1];
-        if(fileFormat == "html"){
-            fs.unlinkSync(curPath);
+        if (fileFormat == "html") {
+          fs.unlinkSync(curPath);
         }
       }
     });
@@ -168,7 +166,7 @@ router.post('/ueupload', (req, res, next) => {
 router.get('/add', function(req, res, next) {
   let folder = uuid.v4();
   res.render('ueditor', {
-    "folder":folder,
+    "folder": folder,
     "doc": {}
   });
 });
@@ -210,12 +208,12 @@ router.get('/edit/:docId', function(req, res, next) {
   wxDoc.findById(req.params.docId, function(err, doc) {
     let folder = doc.id;
     for (var i = 0; i < doc.docs.length; i++) {
-      let fileName = path.join(process.cwd(), 'public', 'document', folder,doc.docs[i].fileName);
-      let d = getContent(fs.readFileSync(fileName,'utf8'));
+      let fileName = path.join(process.cwd(), 'public', 'document', folder, doc.docs[i].fileName);
+      let d = getContent(fs.readFileSync(fileName, 'utf8'));
       doc.docs[i].content = d;
     }
     res.render("ueditor", {
-      "folder":folder,
+      "folder": folder,
       "doc": doc
     });
   });
@@ -244,18 +242,16 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.post('/save', function(req, res, next) {
+router.post('/save', Jssdk.jssdk, function(req, res, next) {
   let doc = req.body;
   let uid = doc.folder;
 
   let dir = path.join(process.cwd(), 'public', 'document', uid);
   if (fs.existsSync(dir)) {
     deleteall(dir); //删除html
-  }
-  else{
+  } else {
     fs.mkdirSync(dir);
   }
-
 
   for (var i = 0; i < doc.arr.length; i++) {
     let fileName = uuid.v4() + '.html';

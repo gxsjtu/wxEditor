@@ -17,6 +17,7 @@
     "node-uuid": "^1.4.8",
     "request": "^2.81.0",
     "static-favicon": "~1.0.0",
-    "ueditor": "^1.0.0"
+    "ueditor": "^1.0.0",
+    "weixin-node-jssdk": "^0.1.0"
   }
 }

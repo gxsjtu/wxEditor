@@ -8,6 +8,8 @@ var request = require('request');
 var url = require('url');
 var express = require('express');
 var router = express.Router();
+const Jssdk = require('../services/jssdk.js');
+router.use(Jssdk.jssdk);
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {

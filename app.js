@@ -23,16 +23,16 @@ app.set('view engine', 'ejs');
 
 app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function(req, res, next) {
   //客户端上传文件设置
-  var imgDir = '/img/ueditor/';
+  var imgDir = req.query.folder;
   var ActionType = req.query.action;
   if (ActionType === 'uploadimage' || ActionType === 'uploadfile' || ActionType === 'uploadvideo') {
     var file_url = imgDir; //图片上传地址
     /*其他上传格式的地址*/
     if (ActionType === 'uploadfile') {
-      file_url = 'document/file/ueditor/'; //附件
+      file_url = imgDir; //附件
     }
     if (ActionType === 'uploadvideo') {
-      file_url = 'document/video/ueditor/'; //视频
+      file_url = imgDir; //视频
     }
     res.ue_up(file_url); //你只要输入要保存的地址 。保存操作交给ueditor来做
     res.setHeader('Content-Type', 'text/html');

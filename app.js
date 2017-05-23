@@ -23,7 +23,7 @@ app.set('view engine', 'ejs');
 
 app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function(req, res, next) {
   //客户端上传文件设置
-  var imgDir = req.query.folder;
+  var imgDir = "/document/"+req.query.folder;
   var ActionType = req.query.action;
   if (ActionType === 'uploadimage' || ActionType === 'uploadfile' || ActionType === 'uploadvideo') {
     var file_url = imgDir; //图片上传地址

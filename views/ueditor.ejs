@@ -193,15 +193,16 @@
     var ue = UE.getEditor('editor');
     ue.ready(() => {
       ue.execCommand('serverparam', {
-        'folder': '123'
+        'folder': '<%= folder%>'
       });
     });
 
     var doc = {
-      id: ''
+      id: '',
+      folder:'<%= folder%>'
     };
     var arr = [];
-    let folderName = '';
+    let folderName = '<%= folder%>';
 
     <% if(doc && doc.id) { %>
     doc.id = '<%= doc.id%>';
@@ -249,7 +250,7 @@
           var dom = $(".doc").eq(i);
           // dom.data("index",i);
           if (arr[i].hasOwnProperty('cover')) {
-            dom.find("img").attr("src", '/cover/' + arr[i].cover);
+            dom.find("img").attr("src", '/document/'+folderName+'/' + arr[i].cover);
           }
           if (arr[i].hasOwnProperty('title')) {
             dom.find(".title").text(arr[i].title);
@@ -436,7 +437,7 @@
           doc.arr = arr;
           $.ajax({
             type: "post",
-            url: '/submit',
+            url: '/save',
             data: JSON.stringify(doc),
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',

@@ -1,437 +1,452 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
+
 <head>
-    <title>图文管理</title>
-    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.config.js"></script>
-    <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js">
-    </script>
-    <script type="text/javascript" charset="utf-8" src="/ueditor/lang/zh-cn/zh-cn.js">
-    </script>
-    <style type="text/css">
-        html {
-            height: 100%;
-        }
+  <title>图文管理</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+  <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.config.js"></script>
+  <script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js">
+  </script>
+  <script type="text/javascript" charset="utf-8" src="/ueditor/lang/zh-cn/zh-cn.js">
+  </script>
+  <style type="text/css">
+    html {
+      height: 100%;
+    }
 
-        body {
-            margin: 0;
-            margin-top: 20px;
-            padding: 0;
-            line-height: 1.6;
-            font-family: "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "\9ED1\4F53", Arial, sans-serif;
-            color: #222;
-            font-size: 14px;
-            min-width: 1200px;
-            background: #e7e8eb;
-            height: calc(100% - 20px);
-        }
+    body {
+      margin: 0;
+      margin-top: 20px;
+      padding: 0;
+      line-height: 1.6;
+      font-family: "Helvetica Neue", "Hiragino Sans GB", "Microsoft YaHei", "\9ED1\4F53", Arial, sans-serif;
+      color: #222;
+      font-size: 14px;
+      min-width: 1200px;
+      background: #e7e8eb;
+      height: calc(100% - 20px);
+    }
 
-        .container {
-            display: flex;
-            margin: 0 auto;
-            width: 1300px;
-            height: calc(100% - 70px);
-            overflow: hidden;
-        }
+    .container {
+      display: flex;
+      margin: 0 auto;
+      width: 1300px;
+      height: calc(100% - 70px);
+      overflow: hidden;
+    }
 
-        .left {
-            width: 238px;
-            height: 100%;
-            background-color: #f8f8f8;
-            padding: 10px 30px;
-            overflow-y: scroll;
-        }
+    .left {
+      width: 238px;
+      height: 100%;
+      background-color: #f8f8f8;
+      padding: 10px 30px;
+      overflow-y: scroll;
+    }
 
-        .editor {
-            width: 1024px;
-            height: calc(100% - 30px);
-        }
+    .editor {
+      width: 1024px;
+      height: calc(100% - 30px);
+    }
 
-        .footer {
-            display: flex;
-            height: 70px;
-            justify-content: center;
-            align-items: center;
-        }
+    .footer {
+      display: flex;
+      height: 70px;
+      justify-content: center;
+      align-items: center;
+    }
 
-        .footer button {
-            width: 100px;
-            height: 30px;
-            background-color: #44b549;
-            border-color: #44b549;
-            color: #fff;
-            outline: none;
-        }
+    .footer button {
+      width: 100px;
+      height: 30px;
+      background-color: #44b549;
+      border-color: #44b549;
+      color: #fff;
+      outline: none;
+    }
 
-        .footer button:hover {
-            background-color: #2f9833;
-        }
+    .footer button:hover {
+      background-color: #2f9833;
+    }
 
-        .input {
-            width: 800px;
-            margin: 10px auto;
-        }
+    .input {
+      width: 800px;
+      margin: 10px auto;
+    }
 
-        .input input {
-            width: 600px;
-            margin-left: 20px;
-        }
+    .input input {
+      width: 600px;
+      margin-left: 20px;
+    }
 
-        .default {
-            width: 188px;
-            height: 119px;
-        }
+    .default {
+      width: 188px;
+      height: 119px;
+    }
 
-        .image-container {
-            background-color: #ececec;
-            width: 188px;
-            height: 119px;
-            position: relative;
-        }
+    .image-container {
+      background-color: #ececec;
+      width: 188px;
+      height: 119px;
+      position: relative;
+    }
 
-        .image-title {
-            position: absolute;
-            bottom: 0;
-            color: white;
-            background: rgba(0, 0, 0, 0.6);
-            width: 100%;
-            overflow-x: hidden;
-        }
+    .image-title {
+      position: absolute;
+      bottom: 0;
+      color: white;
+      background: rgba(0, 0, 0, 0.6);
+      width: 100%;
+      overflow-x: hidden;
+    }
 
-        .doc {
-            padding: 5px;
-            border: 2px solid #e7e7eb;
-            position: relative;
-        }
+    .doc {
+      padding: 5px;
+      border: 2px solid #e7e7eb;
+      position: relative;
+    }
 
-        .active {
-            border: 2px solid #43b548;
-        }
+    .active {
+      border: 2px solid #43b548;
+    }
 
-        .other-img {
-            width: 77px;
-            height: 77px;
-        }
+    .other-img {
+      width: 77px;
+      height: 77px;
+    }
 
-        .other-container {
-            display: flex;
-            flex-direction: row;
-            width: 188px;
-            height: 78px;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .other-container {
+      display: flex;
+      flex-direction: row;
+      width: 188px;
+      height: 78px;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-        .other-container .title {
-            width: 100px;
-            height: 40px;
-            overflow-y: hidden;
-            word-wrap: break-word;
-        }
+    .other-container .title {
+      width: 100px;
+      height: 40px;
+      overflow-y: hidden;
+      word-wrap: break-word;
+    }
 
-        .add {
-            font-size: 60px;
-            text-align: center;
-            height: 90px;
-            line-height: 90px;
-            color: #979797;
-            border: 1px dotted #d9dadc;
-            margin-bottom: 20px;
-        }
+    .add {
+      font-size: 60px;
+      text-align: center;
+      height: 90px;
+      line-height: 90px;
+      color: #979797;
+      border: 1px dotted #d9dadc;
+      margin-bottom: 20px;
+    }
 
-        .add:hover {
-            color: #777;
-        }
+    .add:hover {
+      color: #777;
+    }
 
-        .remove-container{
-          display: none;
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 40px;
-          line-height: 40px;
-          background-color: rgba(0, 0, 0, 0.6);
-          color: white;
-          text-align: right;
-          padding-right: 10px;
-        }
-    </style>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    .remove-container {
+      display: none;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      line-height: 40px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      text-align: right;
+      padding-right: 10px;
+    }
+  </style>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <div class="left">
-        </div>
-        <div class="editor">
-            <div class="input">
-                <span>标题</span><input type="text" placeholder="标题" id="title" />
-            </div>
-            <div class="input">
-                <span>作者</span><input type="text" placeholder="作者" id="author" />
-            </div>
-
-            <div class="input">
-                <form id="uploadForm" enctype="multipart/form-data" action="/cover" method="post">
-                    <span>封面</span><input id="cover" name="cover" type="file" />
-                    <button type="submit" name="btnUpload" id="btnUpload">上传</button>
-                </form>
-            </div>
-
-            <script id="editor" type="text/plain" style="width:1024px;height:100%;"></script>
-        </div>
+  <div class="container">
+    <div class="left">
     </div>
-    <div class="footer">
-        <input type="button" value="保存" id="btnSubmit">
-        <!-- <button id="btnSubmit" type="button">保存</button> -->
+    <div class="editor">
+      <div class="input">
+        <span>标题</span><input type="text" placeholder="标题" id="title" />
+      </div>
+      <div class="input">
+        <span>作者</span><input type="text" placeholder="作者" id="author" />
+      </div>
+
+      <div class="input">
+        <form id="uploadForm" enctype="multipart/form-data" action="/cover" method="post">
+          <span>封面</span><input id="cover" name="cover" type="file" />
+          <button type="submit" name="btnUpload" id="btnUpload">上传</button>
+        </form>
+      </div>
+
+      <script id="editor" type="text/plain" style="width:1024px;height:100%;"></script>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
-    <script type="text/javascript">
-        var ue = UE.getEditor('editor');
-        var doc = {id:''};
-        var arr = [];
+  </div>
+  <div class="footer">
+    <input type="button" value="保存" id="btnSubmit">
+    <!-- <button id="btnSubmit" type="button">保存</button> -->
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
+  <script type="text/javascript">
+    var ue = UE.getEditor('editor');
+    var doc = {
+      id: ''
+    };
+    var arr = [];
 
-         <% if(doc && doc.id) { %>
-           doc.id = '<%= doc.id%>';
-           arr = [
-             <% for(var i = 0; i < doc.docs.length; i++){
-                 var d = doc.docs[i]; %>
-                  {title:'<%- d.title%>',author:'<%= d.author%>',cover:'<%= d.cover%>',fileName:'<%= d.fileName%>',content:'<%- d.content%>'},
-            <%  } %>
-           ];
-         <% }%>
+    <% if(doc && doc.id) { %>
+    doc.id = '<%= doc.id%>';
+    arr = [
+      <% for(var i = 0; i < doc.docs.length; i++){
+                 var d = doc.docs[i]; %> {
+        title: '<%- d.title%>',
+        author: '<%= d.author%>',
+        cover: '<%= d.cover%>',
+        fileName: '<%= d.fileName%>',
+        content: '<%- d.content%>'
+      },
+      <%  } %>
+    ];
+    <% }%>
 
-        var coverName;
-        var currentIndex = 0;
+    var coverName;
+    var currentIndex = 0;
 
-        function getContent(){
-          arr[currentIndex].content = ue.getContent();
+    function getContent() {
+      arr[currentIndex].content = ue.getContent();
+    }
+
+    function makeDoc() {
+      $(".left").empty();
+      currentIndex = 0;
+      if (arr.length == 0) {
+        var obj = {
+          index: 0,
+          title: '',
+          author: '',
+          content: '',
+          cover: ''
         }
-
-        function makeDoc(){
-          $(".left").empty();
-          currentIndex = 0;
-          if(arr.length == 0){
-            var obj = {index : 0, title: '', author: '', content: '', cover: ''}
-            arr.push(obj);
+        arr.push(obj);
+        $(".left").append(makePrimary());
+      } else {
+        for (var i = 0; i < arr.length; i++) {
+          arr[i].index = i;
+          if (i == 0) {
             $(".left").append(makePrimary());
+          } else {
+            $(".left").append(makeOther(i));
           }
-          else{
-            for (var i = 0; i < arr.length; i++) {
-              arr[i].index = i;
-              if(i == 0){
-                $(".left").append(makePrimary());
-              }
-              else{
-                $(".left").append(makeOther(i));
-              }
-              var dom = $(".doc").eq(i);
-              // dom.data("index",i);
-              if(arr[i].hasOwnProperty('cover')){
-                dom.find("img").attr("src",'/cover/'+arr[i].cover);
-              }
-              if(arr[i].hasOwnProperty('title')){
-                dom.find(".title").text(arr[i].title);
-              }
+          var dom = $(".doc").eq(i);
+          // dom.data("index",i);
+          if (arr[i].hasOwnProperty('cover')) {
+            dom.find("img").attr("src", '/cover/' + arr[i].cover);
+          }
+          if (arr[i].hasOwnProperty('title')) {
+            dom.find(".title").text(arr[i].title);
+          }
+        }
+      }
+      $(".left").append(makeAdd());
+      $(".doc").eq(0).addClass("active");
+      if (arr[0].hasOwnProperty('content')) {
+        ue.setContent(arr[0].content);
+      } else {
+        //ue.setContent("");
+      }
+      if (arr[0].hasOwnProperty('title')) {
+        $("#title").val(arr[0].title);
+      } else {
+        $("#title").val("");
+      }
+      if (arr[0].hasOwnProperty('author')) {
+        $("#author").val(arr[0].author);
+      } else {
+        $("#author").val("");
+      }
+
+    }
+
+    function makePrimary() {
+      var primary = $(
+        '<div class="doc" data-index="0"><div class="image-container"><img class="default" src="/img/back.png" alt=""><div class="image-title title">标题</div></div><div class="remove-container"><span class="remove" data-index="0">删除</span></div></div>'
+      );
+      return primary;
+    }
+
+    function makeOther(index) {
+      var other = $('<div class="doc" data-index="' + index + '"><div class="other-container"><div class="title">标题</div><img src="/img/small.png"alt="" class="other-img"></div><div class="remove-container"><span class="remove" data-index="' + index +
+        '">删除</span></div></div>');
+      return other;
+    }
+
+    function makeAdd() {
+      var add = $('<div class="add">+</div>');
+      return add;
+    }
+
+    function getDocByIndex(index) {
+      for (var i = 0; i < arr.length; i++) {
+        if (arr[i].index == index) {
+          return arr[i];
+        }
+      }
+      return null;
+    }
+
+    function showLog() {
+      console.log(arr);
+    }
+
+    $(function() {
+      ue.addListener("ready", function() {
+        makeDoc();
+      })
+
+      //点击事件
+      $(".left").on('click', '.doc', function() {
+        getContent();
+        $(".doc").removeClass("active");
+        $(this).addClass("active");
+        var file = $("#cover");
+        file.after(file.clone().val(""));
+        file.remove();
+
+        currentIndex = $(this).data("index");
+        if (arr[currentIndex].hasOwnProperty('content')) {
+          ue.setContent(arr[currentIndex].content);
+        } else {
+          ue.setContent("");
+        }
+        if (arr[currentIndex].hasOwnProperty('title')) {
+          $("#title").val(arr[currentIndex].title);
+        } else {
+          $("#title").val("");
+        }
+        if (arr[currentIndex].hasOwnProperty('author')) {
+          $("#author").val(arr[currentIndex].author);
+        } else {
+          $("#author").val("");
+        }
+      });
+
+      $(".left").on('click', '.add', function() {
+        getContent();
+        var dom = makeOther(arr.length);
+        $(this).before(dom);
+        $(".doc").removeClass("active");
+
+        $("#title").val("");
+        $("#author").val("");
+        ue.setContent("");
+        var file = $("#cover");
+        file.after(file.clone().val(""));
+        file.remove();
+        var newDoc = {
+          index: arr.length - 1
+        };
+        arr.push(newDoc);
+        currentIndex = arr.length - 1;
+        $(".doc").eq(currentIndex).addClass("active");
+        //dom.trigger("click");
+      });
+
+      $(".left").on('mouseover mouseout', '.doc', function(e) {
+        if (e.type == "mouseover") {
+          $(this).find(".remove-container").show();
+        } else if (e.type == "mouseout") {
+          $(this).find(".remove-container").hide();
+        }
+      })
+
+      //删除
+      $(".left").on('click', '.remove', function(e) {
+        let index = $(this).data('index');
+        arr.splice(index, 1);
+        makeDoc();
+        //阻止冒泡，否则会触发.doc的click事件。
+        e.stopPropagation();
+      });
+
+      $("#title").on("input", function() {
+        var text = $(this).val();
+        if (text) {
+          $(".active .title").text(text);
+        } else {
+          $(".active .title").text("标题");
+        }
+        arr[currentIndex].title = text;
+      });
+
+      $("#author").on("input", function() {
+        arr[currentIndex].author = $(this).val();
+      });
+
+      $('#uploadForm').submit(function() {
+        $(this).ajaxSubmit({
+          data: {
+            folder: '99999'
+          },
+          error: function(xhr) {
+            console.log(xhr);
+            alert('上传失败');
+          },
+          success: function(res) {
+            if (res.result == 'ok') {
+              coverName = res.fileName;
+              arr[currentIndex].cover = coverName;
+              $(".active img").attr("src", "/cover/" + coverName);
             }
           }
-          $(".left").append(makeAdd());
-          $(".doc").eq(0).addClass("active");
-          if(arr[0].hasOwnProperty('content')){
-            ue.setContent(arr[0].content);
-          }
-          else{
-            //ue.setContent("");
-          }
-          if(arr[0].hasOwnProperty('title')){
-            $("#title").val(arr[0].title);
-          }
-          else{
-            $("#title").val("");
-          }
-          if(arr[0].hasOwnProperty('author')){
-            $("#author").val(arr[0].author);
-          }
-          else{
-            $("#author").val("");
-          }
-
-        }
-
-        function makePrimary(){
-          var primary = $('<div class="doc" data-index="0"><div class="image-container"><img class="default" src="/img/back.png" alt=""><div class="image-title title">标题</div></div><div class="remove-container"><span class="remove" data-index="0">删除</span></div></div>');
-          return primary;
-        }
-
-        function makeOther(index){
-          var other = $('<div class="doc" data-index="'+index+'"><div class="other-container"><div class="title">标题</div><img src="/img/small.png"alt="" class="other-img"></div><div class="remove-container"><span class="remove" data-index="'+index+'">删除</span></div></div>');
-          return other;
-        }
-
-        function makeAdd(){
-          var add = $('<div class="add">+</div>');
-          return add;
-        }
-
-        function getDocByIndex(index){
-          for (var i = 0; i < arr.length; i++) {
-            if(arr[i].index == index){
-              return arr[i];
-            }
-          }
-          return null;
-        }
-
-          function showLog(){
-            console.log(arr);
-          }
-
-        $(function() {
-            ue.addListener("ready",function(){
-              makeDoc();
-            })
-
-            //点击事件
-            $(".left").on('click', '.doc', function() {
-                getContent();
-                $(".doc").removeClass("active");
-                $(this).addClass("active");
-                var file = $("#cover");
-                file.after(file.clone().val(""));
-                file.remove();
-
-                currentIndex = $(this).data("index");
-                if(arr[currentIndex].hasOwnProperty('content')){
-                  ue.setContent(arr[currentIndex].content);
-                }
-                else{
-                  ue.setContent("");
-                }
-                if(arr[currentIndex].hasOwnProperty('title')){
-                  $("#title").val(arr[currentIndex].title);
-                }
-                else{
-                  $("#title").val("");
-                }
-                if(arr[currentIndex].hasOwnProperty('author')){
-                  $("#author").val(arr[currentIndex].author);
-                }
-                else{
-                  $("#author").val("");
-                }
-            });
-
-            $(".left").on('click', '.add', function() {
-                getContent();
-                var dom = makeOther(arr.length);
-                $(this).before(dom);
-                $(".doc").removeClass("active");
-
-                $("#title").val("");
-                $("#author").val("");
-                ue.setContent("");
-                var file = $("#cover");
-                file.after(file.clone().val(""));
-                file.remove();
-                var newDoc = {index : arr.length - 1};
-                arr.push(newDoc);
-                currentIndex = arr.length - 1;
-                $(".doc").eq(currentIndex).addClass("active");
-                //dom.trigger("click");
-            });
-
-            $(".left").on('mouseover mouseout','.doc',function(e){
-              if(e.type == "mouseover"){
-                $(this).find(".remove-container").show();
-              }else if(e.type == "mouseout"){
-                $(this).find(".remove-container").hide();
-               }
-            })
-
-            //删除
-            $(".left").on('click','.remove',function(e){
-              let index = $(this).data('index');
-              arr.splice(index,1);
-              makeDoc();
-              //阻止冒泡，否则会触发.doc的click事件。
-              e.stopPropagation();
-            });
-
-            $("#title").on("input", function() {
-                var text = $(this).val();
-                if (text) {
-                    $(".active .title").text(text);
-                } else {
-                    $(".active .title").text("标题");
-                }
-                arr[currentIndex].title = text;
-            });
-
-            $("#author").on("input",function(){
-              arr[currentIndex].author = $(this).val();
-            });
-
-            $('#uploadForm').submit(function() {
-                $(this).ajaxSubmit({
-                    error: function(xhr) {
-                        alert('上传失败');
-                    },
-                    success: function(res) {
-                        if (res.result == 'ok') {
-                            coverName = res.fileName;
-                            arr[currentIndex].cover = coverName;
-                            $(".active img").attr("src", "/cover/" + coverName);
-                        }
-                    }
-                });
-                return false;
-            });
-
-            $("#btnSubmit").click(function() {
-                getContent();
-                for (var i = 0; i < arr.length; i++) {
-                  if(!arr[i].title){
-                    alert('第'+(i+1)+'个图文没有输入标题');
-                    return false;
-                  }
-                  if(!arr[i].author){
-                    alert('第'+(i+1)+'个图文没有输入作者');
-                    return false;
-                  }
-                  if(!arr[i].cover){
-                    alert('第'+(i+1)+'个图文没有上传封面');
-                    return false;
-                  }
-                  if(!arr[i].content){
-                    alert('第'+(i+1)+'个图文没有输入正文');
-                    return false;
-                  }
-                }
-
-                if(arr.length>0){
-                  doc.arr = arr;
-                  $.ajax({
-                    type:"post",
-                    url:'/submit',
-                    data:JSON.stringify(doc),
-                    dataType:'json',
-                    contentType:'application/json; charset=utf-8',
-                    success:function(data){
-                      console.log(data);
-                      if(data.result == 'ok'){
-                        alert('保存成功');
-                        window.location.href="/";
-                      }
-                      else{
-                        alert('保存失败');
-                      }
-                    }
-                  })
-                }
-            });
         });
-    </script>
+        return false;
+      });
+
+      $("#btnSubmit").click(function() {
+        getContent();
+        for (var i = 0; i < arr.length; i++) {
+          if (!arr[i].title) {
+            alert('第' + (i + 1) + '个图文没有输入标题');
+            return false;
+          }
+          if (!arr[i].author) {
+            alert('第' + (i + 1) + '个图文没有输入作者');
+            return false;
+          }
+          if (!arr[i].cover) {
+            alert('第' + (i + 1) + '个图文没有上传封面');
+            return false;
+          }
+          if (!arr[i].content) {
+            alert('第' + (i + 1) + '个图文没有输入正文');
+            return false;
+          }
+        }
+
+        if (arr.length > 0) {
+          doc.arr = arr;
+          $.ajax({
+            type: "post",
+            url: '/submit',
+            data: JSON.stringify(doc),
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function(data) {
+              console.log(data);
+              if (data.result == 'ok') {
+                alert('保存成功');
+                window.location.href = "/";
+              } else {
+                alert('保存失败');
+              }
+            }
+          })
+        }
+      });
+    });
+  </script>
 </body>
+
 </html>

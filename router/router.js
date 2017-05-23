@@ -11,19 +11,26 @@ var router = express.Router();
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
-    callback(null, './public/cover');
+    if (req.query.folder) {
+      callback(null, './public/document/' + req.query.folder);
+    } else {
+      var folder = uuid.v4();
+      fs.mkdir('./public/document/' + folder, () => {
+        req.folder = folder;
+        callback(null, './public/document/' + folder);
+      });
+    }
   },
   filename: function(req, file, callback) {
     //file.originalname   coffee.jpg
     var fileFormat = (file.originalname).split(".");
-
-    callback(null, uuid.v4() + '.' + fileFormat[fileFormat.length - 1]);
+    callback(null, uuid.v4());
   }
 });
 
 var upload = multer({
   storage: storage
-}).single('cover');
+});
 
 function saveData(doc, uid, res) {
   var docs = [];
@@ -109,22 +116,15 @@ function deleteall(path) {
   }
 };
 
-router.post('/cover', upload, (req, res, next) => {
-  upload(req, res, function(err) {
-    if (err) {
-      console.log(err);
-      res.json({
-        result: 'err'
-      });
-    }
-    res.json({
-      result: 'ok',
-      fileName: req.file.filename
-    });
+router.post('/cover', upload.single('cover'), (req, res, next) => {
+  res.json({
+    folder: req.folder,
+    result: 'ok',
+    fileName: req.file.filename
   });
 });
 
-router.post('/ueupload', upload, (req, res, next) => {
+router.post('/ueupload', (req, res, next) => {
   //客户端上传文件设置
   var imgDir = '/img/ueditor/';
   var ActionType = req.query.action;

@@ -46,7 +46,7 @@ function saveData(doc, uid, res) {
     d.author = doc.arr[i].author;
     d.cover = doc.arr[i].cover;
     d.fileName = doc.arr[i].fileName;
-    d.content = '';
+    d.content = doc.arr[i].content;
     docs.push(d);
   }
 
@@ -207,11 +207,6 @@ router.get('/showMaterials', function(req, res, next) {
 router.get('/edit/:docId', function(req, res, next) {
   wxDoc.findById(req.params.docId, function(err, doc) {
     let folder = doc.id;
-    for (var i = 0; i < doc.docs.length; i++) {
-      let fileName = path.join(process.cwd(), 'public', 'document', folder, doc.docs[i].fileName);
-      let d = getContent(fs.readFileSync(fileName, 'utf8'));
-      doc.docs[i].content = d;
-    }
     res.render("ueditor", {
       "folder": folder,
       "doc": doc

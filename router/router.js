@@ -1,6 +1,7 @@
 var wxDoc = require("../models/wxDoc.js");
 var path = require('path');
 var fs = require('fs');
+var path = require('path');
 var uuid = require('node-uuid');
 var multer = require('multer');
 var util = require('util');
@@ -13,8 +14,13 @@ router.use(Jssdk.jssdk);
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
+    console.log(req.query.folder);
     if (req.query.folder) {
-      callback(null, './public/document/' + req.query.folder);
+      let p = path.join(process.cwd(), 'public', 'document', req.query.folder);
+      if(!fs.existsSync(p)){
+        fs.mkdirSync(p);
+      }
+      callback(null, p);
     } else {
       var folder = uuid.v4();
       fs.mkdir('./public/document/' + folder, () => {
@@ -25,7 +31,7 @@ var storage = multer.diskStorage({
   },
   filename: function(req, file, callback) {
     //file.originalname   coffee.jpg
-    var fileFormat = (file.originalname).split(".");
+    //var fileFormat = (file.originalname).split(".");
     callback(null, uuid.v4());
   }
 });
@@ -42,7 +48,7 @@ function saveData(doc, uid, res) {
     d.author = doc.arr[i].author;
     d.cover = doc.arr[i].cover;
     d.fileName = doc.arr[i].fileName;
-    d.content = doc.arr[i].content;
+    d.content = '';
     docs.push(d);
   }
 
@@ -102,6 +108,18 @@ function makeContent(content) {
   return result;
 }
 
+  function getContent(content){
+    content = content.replace('<html>\r\n','');
+    content = content.replace('<head>\r\n','');
+    content = content.replace('<meta name = "viewport" content = "width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = 0" />\r\n','');
+    content = content.replace('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\r\n','');
+    content = content.replace('</head>\r\n','');
+    content = content.replace('<body>\r\n','');
+    content = content.replace('\r\n</body>\r\n','');
+    content = content.replace('</html>','');
+    return content;
+  }
+
 function deleteall(path) {
   var files = [];
   if (fs.existsSync(path)) {
@@ -111,10 +129,13 @@ function deleteall(path) {
       if (fs.statSync(curPath).isDirectory()) { // recurse
         deleteall(curPath);
       } else { // delete file
-        fs.unlinkSync(curPath);
+        let fileFormat = file.split(".")[1];
+        if(fileFormat == "html"){
+            fs.unlinkSync(curPath);
+        }
       }
     });
-    fs.rmdirSync(path);
+    //fs.rmdirSync(path);
   }
 };
 
@@ -145,7 +166,9 @@ router.post('/ueupload', (req, res, next) => {
 });
 
 router.get('/add', function(req, res, next) {
+  let folder = uuid.v4();
   res.render('ueditor', {
+    "folder":folder,
     "doc": {}
   });
 });
@@ -183,10 +206,16 @@ router.get('/showMaterials', function(req, res, next) {
   })
 });
 
-router.get('/edit', function(req, res, next) {
-  var docId = req.params["docId"];
-  wxDoc.findById(docId, function(err, doc) {
+router.get('/edit/:docId', function(req, res, next) {
+  wxDoc.findById(req.params.docId, function(err, doc) {
+    let folder = doc.id;
+    for (var i = 0; i < doc.docs.length; i++) {
+      let fileName = path.join(process.cwd(), 'public', 'document', folder,doc.docs[i].fileName);
+      let d = getContent(fs.readFileSync(fileName,'utf8'));
+      doc.docs[i].content = d;
+    }
     res.render("ueditor", {
+      "folder":folder,
       "doc": doc
     });
   });
@@ -217,24 +246,22 @@ router.get('/', function(req, res, next) {
 
 router.post('/save', function(req, res, next) {
   let doc = req.body;
-  let uid = '';
-  if (doc.id) {
-    uid = doc.id;
-  } else {
-    uid = uuid.v4();
-  }
+  let uid = doc.folder;
 
   let dir = path.join(process.cwd(), 'public', 'document', uid);
   if (fs.existsSync(dir)) {
-    deleteall(dir); //删除
+    deleteall(dir); //删除html
   }
-  fs.mkdirSync(dir);
+  else{
+    fs.mkdirSync(dir);
+  }
+
 
   for (var i = 0; i < doc.arr.length; i++) {
     let fileName = uuid.v4() + '.html';
     doc.arr[i].fileName = fileName;
     let content = makeContent(doc.arr[i].content);
-    fs.writeFileSync(path.join(dir, fileName), content);
+    fs.writeFile(path.join(dir, fileName), content);
   }
   saveData(doc, uid, res);
 });

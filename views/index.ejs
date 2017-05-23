@@ -94,12 +94,12 @@
                   <% if(i == 0) { %>
                     <div class="box-container" style="overflow:hidden;">
                     <div class="first-title"><%= d.title %></div>
-                    <img class="first-cover" src="/cover/<%= d.cover %>" alt="">
+                    <img class="first-cover" src="/document/<%= doc.id %>/<%= d.cover %>" alt="">
                   <% } %>
                   <% if(i > 0) { %>
                     <div class="box-container" style="height:88px;">
                     <div class="title"><%= d.title %></div>
-                    <img class="cover" src="/cover/<%= d.cover %>" alt="">
+                    <img class="cover" src="/document/<%= doc.id %>/<%= d.cover %>" alt="">
                   <% } %>
                 </div>
               <% } %>

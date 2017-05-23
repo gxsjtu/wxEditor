@@ -16,7 +16,7 @@ var storage = multer.diskStorage({
     } else {
       var folder = uuid.v4();
       fs.mkdir('./public/document/' + folder, () => {
-        req.folder = folder;
+        req.query.folder = folder;
         callback(null, './public/document/' + folder);
       });
     }
@@ -118,7 +118,7 @@ function deleteall(path) {
 
 router.post('/cover', upload.single('cover'), (req, res, next) => {
   res.json({
-    folder: req.folder,
+    folder: req.query.folder,
     result: 'ok',
     fileName: req.file.filename
   });

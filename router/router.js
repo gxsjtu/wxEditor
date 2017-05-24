@@ -93,7 +93,8 @@ function appendLine(content, append) {
   return content + append + '\r\n';
 }
 
-function makeContent(content) {
+function makeContent(doc,req) {
+  let content = doc.content;
   let result = appendLine('<html>', '');
   result = appendLine(result, '<head>');
   result = appendLine(result, '<meta name = "viewport" content = "width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = 0" />');
@@ -101,21 +102,22 @@ function makeContent(content) {
   result = appendLine(result, '</head>');
   result = appendLine(result, '<body>');
   result = appendLine(result, content);
+  result = appendLine(result, '<script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>');
+  result = appendLine(result, '<script>');
+  result = appendLine(result, 'wx.config({');
+  result = appendLine(result, 'debug: false,');
+  result = appendLine(result, 'appId: "'+req.jssdk.appId+'", ');
+  result = appendLine(result, 'timestamp: "'+req.jssdk.timestamp+'", ');
+  result = appendLine(result, 'nonceStr: "'+req.jssdk.nonceStr+'", ');
+  result = appendLine(result, 'signature: "'+req.jssdk.signature+'", ');
+  result = appendLine(result, "jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] });" );
+
+  result = appendLine(result, 'wx.ready(function(){');
+  result = appendLine(result, "wx.onMenuShareTimeline({title: '"+doc.title+"', link: '', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { }});");
+  result = appendLine(result, '});');
   result = appendLine(result, '</body>');
   result += '</html>';
   return result;
-}
-
-function getContent(content) {
-  content = content.replace('<html>\r\n', '');
-  content = content.replace('<head>\r\n', '');
-  content = content.replace('<meta name = "viewport" content = "width=device-width, initial-scale = 1.0, maximum-scale = 1.0, user-scalable = 0" />\r\n', '');
-  content = content.replace('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\r\n', '');
-  content = content.replace('</head>\r\n', '');
-  content = content.replace('<body>\r\n', '');
-  content = content.replace('\r\n</body>\r\n', '');
-  content = content.replace('</html>', '');
-  return content;
 }
 
 function deleteall(path) {
@@ -251,7 +253,7 @@ router.post('/save', Jssdk.jssdk, function(req, res, next) {
   for (var i = 0; i < doc.arr.length; i++) {
     let fileName = uuid.v4() + '.html';
     doc.arr[i].fileName = fileName;
-    let content = makeContent(doc.arr[i].content);
+    let content = makeContent(doc.arr[i],req);
     fs.writeFile(path.join(dir, fileName), content);
   }
   saveData(doc, uid, res);

@@ -13,6 +13,8 @@ const Jssdk = require('../services/jssdk.js');
 const Log = require('../models/log.js');
 const moment = require('moment');
 const Global = require('../global.js');
+var WechatAPI = require('wechat-api');
+var api = new WechatAPI(Global.appId, Global.appSecret);
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {

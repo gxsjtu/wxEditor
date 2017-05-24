@@ -22,6 +22,7 @@
     "request": "^2.81.0",
     "static-favicon": "~1.0.0",
     "ueditor": "^1.0.0",
+    "wechat-api": "^1.32.1",
     "weixin-node-jssdk": "^0.1.0"
   }
 }

@@ -34,8 +34,8 @@ var storage = multer.diskStorage({
   },
   filename: function(req, file, callback) {
     //file.originalname   coffee.jpg
-    //var fileFormat = (file.originalname).split(".");
-    callback(null, uuid.v4());
+    var fileFormat = (file.originalname).split(".");
+    callback(null, uuid.v4() + fileFormat);
   }
 });
 
@@ -98,7 +98,7 @@ function appendLine(content, append) {
   return content + append + '\r\n';
 }
 
-function makeContent(doc, folder ,req) {
+function makeContent(doc, folder, req) {
   let content = doc.content;
   let result = appendLine('<html>', '');
   result = appendLine(result, '<head>');
@@ -118,8 +118,8 @@ function makeContent(doc, folder ,req) {
   result = appendLine(result, "jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] });");
 
   result = appendLine(result, 'wx.ready(function(){');
-  let link = Global.server+"/document/"+folder+"/"+doc.fileName;
-  result = appendLine(result, "wx.onMenuShareTimeline({title: '" + doc.title + "', link: '"+link+"', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { alert('ok'); }});");
+  let link = Global.server + "/document/" + folder + "/" + doc.fileName;
+  result = appendLine(result, "wx.onMenuShareTimeline({title: '" + doc.title + "', link: '" + link + "', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { alert('ok'); }});");
   result = appendLine(result, '});');
   result = appendLine(result, '</body>');
   result += '</html>';
@@ -145,6 +145,10 @@ function deleteall(path) {
     fs.rmdirSync(path);
   }
 };
+
+router.get('/sendAll', (req, res, next) => {
+  api.massSendNews(mediaId, receivers, callback);
+});
 
 router.post('/log', (req, res, next) => {
   var docId = req.body.docId;
@@ -178,10 +182,15 @@ router.post('/log', (req, res, next) => {
 });
 
 router.post('/cover', upload.single('cover'), (req, res, next) => {
-  res.json({
-    folder: req.query.folder,
-    result: 'ok',
-    fileName: req.file.filename
+  var path = __dirname + '/..' + '/public/document/' + req.query.folder + '/' + req.file.filename;
+  console.log(path);
+  api.uploadMaterial(path, "image", (err, result) => {
+    res.json({
+      folder: req.query.folder,
+      result: 'ok',
+      fileName: req.file.filename,
+      mediaId: result.media_id
+    });
   });
 });
 
@@ -255,17 +264,16 @@ router.post('/save', Jssdk.jssdk, function(req, res, next) {
 
   for (var i = 0; i < doc.arr.length; i++) {
     let fileName = '';
-    if(doc.arr[i].fileName){
+    if (doc.arr[i].fileName) {
       fileName = doc.arr[i].fileName;
       fs.unlinkSync(path.join(dir, fileName));
-    }
-    else{
+    } else {
       fileName = uuid.v4() + '.html';
       doc.arr[i].fileName = fileName;
     }
 
-    let content = makeContent(doc.arr[i],uid,req);
-    fs.writeFile(path.join(dir, fileName), content,(err)=>{
+    let content = makeContent(doc.arr[i], uid, req);
+    fs.writeFile(path.join(dir, fileName), content, (err) => {
       if (err)
         console.log(err);
     });

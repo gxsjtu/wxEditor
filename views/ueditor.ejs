@@ -16,6 +16,7 @@
     }
 
     body {
+      background: #e7e8eb;
       margin: 0;
       margin-top: 20px;
       padding: 0;
@@ -24,7 +25,6 @@
       color: #222;
       font-size: 14px;
       min-width: 1200px;
-      background: #e7e8eb;
       height: calc(100% - 20px);
     }
 
@@ -183,13 +183,14 @@
 
       <script id="editor" type="text/plain" style="width:1024px;height:100%;"></script>
     </div>
-  </div>
+</div>
   <div class="footer">
     <input type="button" value="保存" id="btnSubmit">
-    <!-- <button id="btnSubmit" type="button">保存</button> -->
+    <input id="btnCancel" type="button" value="取消"/>
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.form/4.2.1/jquery.form.min.js"></script>
   <script type="text/javascript">
+
     var ue = UE.getEditor('editor');
     ue.ready(() => {
       ue.execCommand('serverparam', {
@@ -411,6 +412,10 @@
           }
         });
         return false;
+      });
+
+      $("#btnCancel").click(function(){
+        window.location.href = "/";
       });
 
       $("#btnSubmit").click(function() {

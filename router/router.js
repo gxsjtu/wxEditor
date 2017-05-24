@@ -267,7 +267,7 @@ router.get('/delete/:docId', function(req, res, next) {
       deleteall(dir); //删除
     }
     wxDoc.findAll(function(err, result) {
-      res.render("index", {
+      res.render("/views/index", {
         "docs": result
       });
     });
@@ -277,6 +277,14 @@ router.get('/delete/:docId', function(req, res, next) {
 router.get('/', function(req, res, next) {
   wxDoc.findAll(function(err, result) {
     res.render("index", {
+      "docs": result
+    });
+  });
+});
+
+router.get('/list', function(req, res, next) {
+  wxDoc.findAll(function(err, result) {
+    res.render('index', {
       "docs": result
     });
   });

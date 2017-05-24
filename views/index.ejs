@@ -4,7 +4,21 @@
     <meta charset="utf-8">
     <title>事妈驾到</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <link rel="stylesheet" href="/bootstrap/dist/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/bootstrap/js/affix.js"></script>
     <style>
+    .border-li{
+      border-top:1px #eee solid;
+      border-left:1px #eee solid;
+      border-right:1px #eee solid;
+      width: 100%;
+    }
+
+    .affix {
+      width: 250px;
+    }
       .container{
         width: 80%;
         margin: 0 auto;
@@ -22,7 +36,7 @@
       .first-title{
         position: absolute;
         bottom: 0;
-        width: 268px;
+        width: 290px;
         height: 25px;
         line-height: 25px;
         background: rgba(0,0,0,0.6);
@@ -30,7 +44,7 @@
       }
 
       .first-cover{
-        width: 268px;
+        width: 290px;
         height: 160px;
       }
 
@@ -43,9 +57,9 @@
 
       .box-container{
         position:relative;
-        width: 268px;
-        border: 1px solid #e7e7eb;
-        padding: 10px;
+        width: 290px;
+        /*border: 1px solid #e7e7eb;
+        padding: 10px;*/
       }
 
       .title{
@@ -83,7 +97,20 @@
     <!-- <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
   </head>
   <body>
-    <a href="/add">新增</a>
+<div class="row">
+  <div class="col-xs-2">
+      <ul data-spy="affix" id="myAffix" class="nav affix">
+        <li class="border-li"><a href="/list" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;">列表</a></li>
+        <li class="border-li" ><a href="/add" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;">新增</a></li>
+        <li class="border-li" style="border-bottom:1px #eee solid;"><a href="/sendAll" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;">群发</a></li>
+  		</ul>
+      <!-- <ul class="nav nav-pills nva-stacked" style="border:1px #eee solid;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+        <li style=""><a href="/add">列表</a></li>
+        <li><a href="/add">新增</a></li>
+        <li><a href="/add">群发</a></li>
+      </ul> -->
+    </div>
+    <div class="col-xs-10">
     <div class="container">
       <% if (docs.length) { %>
           <% docs.forEach(function(doc){ %>
@@ -92,7 +119,7 @@
                   var d = doc.docs[i]; %>
 
                   <% if(i == 0) { %>
-                    <div class="box-container" style="overflow:hidden;">
+                    <div class="box-container" style="overflow:hidden;margin-top:20px;">
                     <div class="first-title"><%= d.title %></div>
                     <img class="first-cover" src="/document/<%= doc.id %>/<%= d.cover %>" alt="">
                   <% } %>
@@ -112,5 +139,17 @@
           <% }) %>
       <% } %>
     </div>
+  </div>
+</div>
   </body>
 </html>
+<script>
+  $(document).ready(function(){
+    $('#myAffix').affix({
+      offset: {
+        bottom: ($('footer').outerHeight(true) +
+            $('.application').outerHeight(true)) + 40
+    }
+    })
+  })
+</script>

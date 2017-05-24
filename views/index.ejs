@@ -98,19 +98,14 @@
   </head>
   <body>
 <div class="row">
-  <div class="col-xs-2">
+  <div class="col-sm-2">
       <ul data-spy="affix" id="myAffix" class="nav affix">
         <li class="border-li"><a href="/list" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;">列表</a></li>
         <li class="border-li" ><a href="/add" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;">新增</a></li>
         <li class="border-li" style="border-bottom:1px #eee solid;"><a href="/sendAll" style="display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;">群发</a></li>
   		</ul>
-      <!-- <ul class="nav nav-pills nva-stacked" style="border:1px #eee solid;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-        <li style=""><a href="/add">列表</a></li>
-        <li><a href="/add">新增</a></li>
-        <li><a href="/add">群发</a></li>
-      </ul> -->
     </div>
-    <div class="col-xs-10">
+    <div class="col-sm-10">
     <div class="container">
       <% if (docs.length) { %>
           <% docs.forEach(function(doc){ %>

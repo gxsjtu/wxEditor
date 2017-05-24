@@ -36,7 +36,7 @@ var storage = multer.diskStorage({
   filename: function(req, file, callback) {
     //file.originalname   coffee.jpg
     var fileFormat = (file.originalname).split(".");
-    callback(null, uuid.v4() + fileFormat);
+    callback(null, uuid.v4() + '.' +fileFormat[1]);
   }
 });
 
@@ -78,6 +78,7 @@ function saveDataInternal(doc, uid, res) {
     d.title = doc.arr[i].title;
     d.author = doc.arr[i].author;
     d.cover = doc.arr[i].cover;
+    d.mediaId = doc.arr[i].mediaId;
     d.fileName = doc.arr[i].fileName;
     d.content = doc.arr[i].content;
     docs.push(d);

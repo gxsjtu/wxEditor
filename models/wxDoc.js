@@ -4,6 +4,7 @@ var docSchema = new mongoose.Schema({
   title : String,
   author : String,
   cover : String,
+  mediaId : String,
   fileName : String,
   content : String
 });

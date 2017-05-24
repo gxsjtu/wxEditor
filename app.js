@@ -53,7 +53,7 @@ app.use("/ueditor/ue", ueditor(path.join(__dirname, 'public'), function(req, res
 app.use('/', router);
 
 app.listen(3000, function() {
-  console.log('app listen : 3000');
+  //console.log('app listen : 3000');
 });
 
 module.exports = app;

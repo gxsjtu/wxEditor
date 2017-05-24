@@ -10,6 +10,8 @@ var url = require('url');
 var express = require('express');
 var router = express.Router();
 const Jssdk = require('../services/jssdk.js');
+const Log = require('../models/log.js');
+const moment = require('moment');
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
@@ -138,6 +140,37 @@ function deleteall(path) {
     //fs.rmdirSync(path);
   }
 };
+
+router.post('/log', (req, res, next) => {
+  var docId = req.body.docId;
+  var openId = req.body.openId;
+  var parent = req.body.parent;
+  Log.update({
+    docId: docId
+  }, {
+    $push: {
+      items: {
+        openId: openId,
+        forwards: {
+          $push: moment().format('YYYY-MM-DD HH:mm:ss')
+        },
+        parent: parent
+      }
+    }
+  }, {
+    new: true,
+    upsert: true
+  }).then(data => {
+    console.log(data);
+    res.json({
+      err: ""
+    });
+  }).catch(err => {
+    res.json({
+      err: err
+    });
+  });
+});
 
 router.post('/cover', upload.single('cover'), (req, res, next) => {
   res.json({

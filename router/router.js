@@ -10,6 +10,8 @@ var url = require('url');
 var express = require('express');
 var router = express.Router();
 const Jssdk = require('../services/jssdk.js');
+const Log = require('../models/log.js');
+const moment = require('moment');
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
@@ -93,7 +95,7 @@ function appendLine(content, append) {
   return content + append + '\r\n';
 }
 
-function makeContent(doc,req) {
+function makeContent(doc, req) {
   let content = doc.content;
   let result = appendLine('<html>', '');
   result = appendLine(result, '<head>');
@@ -106,14 +108,14 @@ function makeContent(doc,req) {
   result = appendLine(result, '<script>');
   result = appendLine(result, 'wx.config({');
   result = appendLine(result, 'debug: false,');
-  result = appendLine(result, 'appId: "'+req.jssdk.appId+'", ');
-  result = appendLine(result, 'timestamp: "'+req.jssdk.timestamp+'", ');
-  result = appendLine(result, 'nonceStr: "'+req.jssdk.nonceStr+'", ');
-  result = appendLine(result, 'signature: "'+req.jssdk.signature+'", ');
-  result = appendLine(result, "jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] });" );
+  result = appendLine(result, 'appId: "' + req.jssdk.appId + '", ');
+  result = appendLine(result, 'timestamp: "' + req.jssdk.timestamp + '", ');
+  result = appendLine(result, 'nonceStr: "' + req.jssdk.nonceStr + '", ');
+  result = appendLine(result, 'signature: "' + req.jssdk.signature + '", ');
+  result = appendLine(result, "jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] });");
 
   result = appendLine(result, 'wx.ready(function(){');
-  result = appendLine(result, "wx.onMenuShareTimeline({title: '"+doc.title+"', link: '', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { }});");
+  result = appendLine(result, "wx.onMenuShareTimeline({title: '" + doc.title + "', link: '', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { }});");
   result = appendLine(result, '});');
   result = appendLine(result, '</body>');
   result += '</html>';
@@ -139,6 +141,37 @@ function deleteall(path) {
     fs.rmdirSync(path);
   }
 };
+
+router.post('/log', (req, res, next) => {
+  var docId = req.body.docId;
+  var openId = req.body.openId;
+  var parent = req.body.parent;
+  Log.update({
+    docId: docId
+  }, {
+    $push: {
+      items: {
+        openId: openId,
+        forwards: {
+          $push: moment().format('YYYY-MM-DD HH:mm:ss')
+        },
+        parent: parent
+      }
+    }
+  }, {
+    new: true,
+    upsert: true
+  }).then(data => {
+    console.log(data);
+    res.json({
+      err: ""
+    });
+  }).catch(err => {
+    res.json({
+      err: err
+    });
+  });
+});
 
 router.post('/cover', upload.single('cover'), (req, res, next) => {
   res.json({
@@ -172,39 +205,6 @@ router.get('/add', function(req, res, next) {
     "folder": folder,
     "doc": {}
   });
-});
-
-router.get('/showMaterials', function(req, res, next) {
-  request('http://miaozhun.shtx.com.cn/56f87e5085200685087e805f2ae361e7/materials', function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-      let obj = JSON.parse(body).item;
-      if (obj) {
-        let materials = [];
-        for (var i = 0; i < obj.length; i++) {
-          let material = {};
-          material.media_id = obj[i].media_id;
-          material.items = [];
-          let items = obj[i].content.news_item;
-          for (var j = 0; j < items.length; j++) {
-            let materialItem = {};
-            materialItem.title = items[j].title;
-            // let p = url.parse(items[j].thumb_url,true);
-            // materialItem.thumb_url = p.protocol+'//'+p.hostname+p.pathname;
-            materialItem.thumb_url = items[j].thumb_url;
-            material.items.push(materialItem);
-          }
-          materials.push(material);
-        }
-        res.render('materials', {
-          "materials": materials
-        });
-      } else {
-        res.end('we can not get the materials!');
-      }
-    } else {
-      res.end('we can not get the materials!');
-    }
-  })
 });
 
 router.get('/edit/:docId', function(req, res, next) {
@@ -246,7 +246,6 @@ router.post('/save', Jssdk.jssdk, function(req, res, next) {
 
   let dir = path.join(process.cwd(), 'public', 'document', uid);
   if (!fs.existsSync(dir)) {
-    //deleteall(dir); //删除html
     fs.mkdirSync(dir);
   }
 

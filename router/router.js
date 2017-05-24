@@ -12,6 +12,7 @@ var router = express.Router();
 const Jssdk = require('../services/jssdk.js');
 const Log = require('../models/log.js');
 const moment = require('moment');
+const Global = require('../global.js');
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
@@ -95,7 +96,7 @@ function appendLine(content, append) {
   return content + append + '\r\n';
 }
 
-function makeContent(doc, req) {
+function makeContent(doc, folder ,req) {
   let content = doc.content;
   let result = appendLine('<html>', '');
   result = appendLine(result, '<head>');
@@ -115,7 +116,8 @@ function makeContent(doc, req) {
   result = appendLine(result, "jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage', 'onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'] });");
 
   result = appendLine(result, 'wx.ready(function(){');
-  result = appendLine(result, "wx.onMenuShareTimeline({title: '" + doc.title + "', link: '', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { }});");
+  let link = Global.server+"/document/"+folder+"/"+doc.fileName;
+  result = appendLine(result, "wx.onMenuShareTimeline({title: '" + doc.title + "', link: '"+link+"', imgUrl: 'https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/img/logo/bd_logo1_31bdc765.png', success: function () { alert('ok'); }});");
   result = appendLine(result, '});');
   result = appendLine(result, '</body>');
   result += '</html>';
@@ -260,7 +262,7 @@ router.post('/save', Jssdk.jssdk, function(req, res, next) {
       doc.arr[i].fileName = fileName;
     }
 
-    let content = makeContent(doc.arr[i],req);
+    let content = makeContent(doc.arr[i],uid,req);
     fs.writeFile(path.join(dir, fileName), content,(err)=>{
       if (err)
         console.log(err);

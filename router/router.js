@@ -129,13 +129,14 @@ function deleteall(path) {
       if (fs.statSync(curPath).isDirectory()) { // recurse
         deleteall(curPath);
       } else { // delete file
-        let fileFormat = file.split(".")[1];
-        if (fileFormat == "html") {
-          fs.unlinkSync(curPath);
-        }
+        fs.unlinkSync(curPath);
+        // let fileFormat = file.split(".")[1];
+        // if (fileFormat == "html") {
+        //   fs.unlinkSync(curPath);
+        // }
       }
     });
-    //fs.rmdirSync(path);
+    fs.rmdirSync(path);
   }
 };
 
@@ -216,7 +217,7 @@ router.get('/edit/:docId', function(req, res, next) {
   });
 });
 
-router.get('/delete', function(req, res, next) {
+router.get('/delete/:docId', function(req, res, next) {
   var docId = req.params["docId"];
   wxDoc.deleteById(docId, function(err, doc) {
     let dir = path.join(process.cwd(), 'public', 'document', docId);
@@ -244,17 +245,27 @@ router.post('/save', Jssdk.jssdk, function(req, res, next) {
   let uid = doc.folder;
 
   let dir = path.join(process.cwd(), 'public', 'document', uid);
-  if (fs.existsSync(dir)) {
-    deleteall(dir); //删除html
-  } else {
+  if (!fs.existsSync(dir)) {
+    //deleteall(dir); //删除html
     fs.mkdirSync(dir);
   }
 
   for (var i = 0; i < doc.arr.length; i++) {
-    let fileName = uuid.v4() + '.html';
-    doc.arr[i].fileName = fileName;
+    let fileName = '';
+    if(doc.arr[i].fileName){
+      fileName = doc.arr[i].fileName;
+      fs.unlinkSync(path.join(dir, fileName));
+    }
+    else{
+      fileName = uuid.v4() + '.html';
+      doc.arr[i].fileName = fileName;
+    }
+
     let content = makeContent(doc.arr[i],req);
-    fs.writeFile(path.join(dir, fileName), content);
+    fs.writeFile(path.join(dir, fileName), content,(err)=>{
+      if (err)
+        console.log(err);
+    });
   }
   saveData(doc, uid, res);
 });

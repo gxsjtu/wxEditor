@@ -15,6 +15,7 @@ const moment = require('moment');
 const Global = require('../global.js');
 var WechatAPI = require('wechat-api');
 var api = new WechatAPI(Global.appId, Global.appSecret);
+const _ = require('lodash');
 
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
@@ -44,6 +45,33 @@ var upload = multer({
 });
 
 function saveData(doc, uid, res) {
+  return new Promise((resolve, reject) => {
+    var news = {
+      articles: []
+    };
+
+    _.forEach(doc.arr, x => {
+      news.articles.push({
+        "thumb_media_id": "qI6_Ze_6PtV7svjolgs-rN6stStuHIjs9_DidOHaj0Q-mwvBelOXCFZiq2OsIU-p",
+        "author": "xxx",
+        "title": "Happy Day",
+        "content_source_url": "www.qq.com",
+        "content": "content",
+        "digest": "digest",
+        "show_cover_pic": "1"
+      });
+    });
+
+    api.uploadNews(news, (err, result) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(saveDataInternal());
+    });
+  });
+}
+
+function saveDataInternal(doc, uid, res) {
   var docs = [];
   for (var i = 0; i < doc.arr.length; i++) {
     var d = {};

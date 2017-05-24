@@ -405,6 +405,7 @@
               coverName = res.fileName;
               folderName = res.folder;
               arr[currentIndex].cover = coverName;
+              arr[currentIndex].mediaId = res.mediaId;
               $(".active img").attr("src", "/document/" + folderName + "/" + coverName);
             }
           }

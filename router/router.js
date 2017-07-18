@@ -290,6 +290,40 @@ router.get('/list', function(req, res, next) {
   });
 });
 
+router.get('/showMaterials', function(req, res, next) {
+  request('http://miaozhun.shtx.com.cn/56f87e5085200685087e805f2ae361e7/materials', function(error, response, body) {
+    if (!error && response.statusCode == 200) {
+      let obj = JSON.parse(body).item;
+      if (obj) {
+        let materials = [];
+        for (var i = 0; i < obj.length; i++) {
+          let material = {};
+          material.media_id = obj[i].media_id;
+          material.items = [];
+          let items = obj[i].content.news_item;
+          for (var j = 0; j < items.length; j++) {
+            let materialItem = {};
+            materialItem.title = items[j].title;
+            // let p = url.parse(items[j].thumb_url,true);
+            // materialItem.thumb_url = p.protocol+'//'+p.hostname+p.pathname;
+            materialItem.thumb_url = items[j].thumb_url;
+            material.items.push(materialItem);
+          }
+          materials.push(material);
+        }
+        res.render('materials', {
+          "materials": materials
+        });
+      } else {
+        res.end('we can not get the materials!');
+      }
+    } else {
+      res.end('we can not get the materials!');
+    }
+  })
+});
+
+
 router.post('/save', Jssdk.jssdk, function(req, res, next) {
   let doc = req.body;
   let uid = doc.folder;
